@@ -12,8 +12,8 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: your-region
-      AWS_BUCKET: your-bucket-name
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_BUCKET: sonali-cypress-test
 
     steps:
       - name: Checkout code
