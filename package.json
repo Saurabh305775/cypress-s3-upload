@@ -1,0 +1,14 @@
+{
+  "name": "cypress-s3-upload",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "cypress run",
+    "posttest": "node upload-to-s3.js"
+  },
+  "dependencies": {
+    "archiver": "^6.0.0",
+    "aws-sdk": "^2.1516.0",
+    "cypress": "^13.6.6",
+    "dayjs": "^1.11.10"
+  }
+}
