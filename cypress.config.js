@@ -4,6 +4,7 @@ const path = require('path');
 
 module.exports = defineConfig({
   e2e: {
+    supportFile: false,
     setupNodeEvents(on, config) {
       on('after:spec', (spec, results) => {
         if (results && results.tests) {
