@@ -1,0 +1,47 @@
+name: Run Cypress Tests in Docker and Upload to S3
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Build Docker image
+        run: docker build -t cypress-s3-upload .
+
+      - name: Run Cypress tests in Docker
+        run: |
+          docker run \
+            -v ${{ github.workspace }}/screenshots:/e2e/screenshots \
+            -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            -e S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} \
+            cypress-s3-upload
+
+      - name: Upload screenshots to S3
+        if: always()
+        run: |
+          if [ -d "screenshots" ]; then
+            aws s3 cp screenshots s3://${{ secrets.S3_BUCKET_NAME }}/screenshots/ --recursive
+          else
+            echo "No screenshots directory found"
+          fi
